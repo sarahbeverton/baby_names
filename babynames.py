@@ -35,7 +35,6 @@ __author__ = 'Sarah Beverton'
 import sys
 import re
 import argparse
-# from collections import OrderedDict
 
 
 def extract_names(filename):
@@ -68,7 +67,6 @@ def extract_names(filename):
             existing_rank = names_dict.get(name)
             if (existing_rank is None) or int(rank) < int(existing_rank):
                 names_dict[name] = rank
-        print(names_dict)
         name_strings = \
             [' '.join(name_rank) for name_rank in names_dict.items()]
         result = title_result + name_strings
@@ -113,7 +111,11 @@ def main(args):
     parser_output = []
     for file in file_list:
         parser_output.extend(extract_names(file))
-    # print('\n'.join(parser_output[:40]))
+        if create_summary:
+            with open(file+'.summary', 'w') as f:
+                f.write('\n'.join(parser_output))
+        else:
+            print('\n'.join(parser_output))
 
 
 if __name__ == '__main__':
