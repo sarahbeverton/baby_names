@@ -30,10 +30,12 @@ Suggested milestones for incremental development:
  - Build the [year, 'name rank', ... ] list and print it
  - Fix main() to use the extracted_names list
 """
+__author__ = 'Sarah Beverton'
 
 import sys
 import re
 import argparse
+# from collections import OrderedDict
 
 
 def extract_names(filename):
@@ -43,9 +45,34 @@ def extract_names(filename):
     the name-rank strings in alphabetical order.
     ['2006', 'Aaliyah 91', 'Aaron 57', 'Abagail 895', ...]
     """
-    names = []
-    # +++your code here+++
-    return names
+    result = []
+    names_result = []
+    title_result = []
+    with open(filename, 'r') as f:
+        contents = f.readlines()
+        year_pattern = re.compile(r'Popularity\sin\s(\d{4})')
+        names_pattern = \
+            re.compile(r'\<td\>(\d+)\<\/td\>\<td\>(\w+)\<\/td\>\<td\>(\w+)')
+        for line in contents:
+            title = year_pattern.search(line)
+            names = names_pattern.search(line)
+            if title:
+                title_result.append(title.group(1))
+            if names:
+                boy_tuple = names.group(2, 1)
+                girl_tuple = names.group(3, 1)
+                names_result.append(boy_tuple)
+                names_result.append(girl_tuple)
+        names_dict = {}
+        for name, rank in sorted(names_result, key=lambda tup: tup[0]):
+            existing_rank = names_dict.get(name)
+            if (existing_rank is None) or int(rank) < int(existing_rank):
+                names_dict[name] = rank
+        print(names_dict)
+        name_strings = \
+            [' '.join(name_rank) for name_rank in names_dict.items()]
+        result = title_result + name_strings
+    return result
 
 
 def create_parser():
@@ -83,6 +110,10 @@ def main(args):
     # or to write the list to a summary file (e.g. `baby1990.html.summary`).
 
     # +++your code here+++
+    parser_output = []
+    for file in file_list:
+        parser_output.extend(extract_names(file))
+    # print('\n'.join(parser_output[:40]))
 
 
 if __name__ == '__main__':
